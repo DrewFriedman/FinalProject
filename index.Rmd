@@ -6,9 +6,6 @@ output:
   distill::distill_article:
     self_contained: false
 ---
-```{r}
-library(tidyverse)
-```
 
 
 ## Project thoughts
