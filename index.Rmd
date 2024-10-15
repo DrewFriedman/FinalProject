@@ -30,7 +30,4 @@ A positive relationship between immigration rates and GDP growth would support t
 A negative or no correlation between immigration rates and economic growth, or evidence of increasing unemployment or wage stagnation among native-born workers, would disprove the hypothesis. If the data show that higher immigration correlates with negative economic outcomes like a decrease in GDP growth or increasing income inequality, this would challenge the view that immigration has a broadly positive economic impact.
 
 
-```{r}
-install.packages("distill")
-```
 
