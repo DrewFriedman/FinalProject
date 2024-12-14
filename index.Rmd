@@ -221,3 +221,12 @@ This analysis has several limitations. First, the dataset was limited to seven c
 
 Overall, while the findings partially support the hypothesis, they also highlight the complexity of immigration's economic impact. Further research is needed to unravel the nuanced relationships between immigration, GDP growth, and unemployment.
 
+## Citations
+1.Annual GDP % Growth per Country (2015-2020)
+World Bank. (2020). GDP growth (annual %) [Data set]. Retrieved from https://databank.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG/1ff4a498/Popular-Indicators
+
+2. Unemployment Rate by Country and Year
+United Nations Economic Commission for Europe (UNECE). (2020). Unemployment rate by country and year [Data set]. Retrieved from https://w3.unece.org/PXWeb2015/pxweb/en/STAT/STAT__20-ME__3-MELF/40_en_MEUnRateY_r.px
+
+3. Inflows of Foreign Population
+Organisation for Economic Co-operation and Development (OECD). (2020). Inflows of foreign population [Data set]. Retrieved from https://www.oecd.org/en.html
