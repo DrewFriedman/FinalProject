@@ -161,7 +161,7 @@ ggplot(combined_data, aes(x = Immigration_Inflow, y = GDP_Growth, color = Countr
   ) +
   theme_minimal()
 ```
-This graph was less helpful in supporting my hypothesis. It did not show a strong correlation between inflow and annual gdp growth. I was expecting this as GDP growth is due to many factors much of which have little to do with Immigration. 
+This graph was less helpful in supporting my hypothesis, as it did not reveal a strong correlation between immigration inflow and annual GDP growth. This outcome was somewhat expected, given that GDP growth is influenced by numerous factors, many of which are unrelated to immigration.
 
 ## Results Section 
 
@@ -182,7 +182,7 @@ ggplot(combined_data, aes(x = Immigration_Inflow, y = Unemployment_Rate, color =
   geom_point(size = 3, alpha = 0.7) +
   geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed") +
   labs(
-    title = "Linear Regression:Relationship Between Immigration Inflow and Unemployment",
+    title = "Regression:Relationship Between Immigration Inflow and Unemployment",
     x = "Immigration Inflow (Thousands)",
     y = "Unemployment Rate (%)",
     color = "Country"
