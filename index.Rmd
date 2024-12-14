@@ -1,88 +1,223 @@
 ---
 title: "PS270 Final Project"
 author: Drew Friedman
-description: "My final project Drew Friedman"
+description: "Does immigration have a positive impact on a country’s economy?"
 output:
   distill::distill_article:
     self_contained: false
 ---
 
+## Introduction
+Research Question: Does immigration have a positive impact on a country’s economy?
 
-## Project thoughts
+While studying abroad in Vienna, Austria, I took a class on border and immigration policy. This class emphasized how immigration is often used as a political tool by right-leaning groups to create division and push their ideology. Among EU countries, immigration remains a highly contentious issue, and the topic struck close to home, as similar debates are prevalent in the United States, particularly regarding border security along the southern border. This experience motivated me to explore the economic implications of immigration, especially given the common rhetoric that immigrants take jobs from native citizens and strain domestic economies. Despite extensive theoretical and quantitative analysis by scholars, no definitive answer exists. Using my newly developed skills in R, I aimed to contribute to this discussion by analyzing available data.
 
-I am interested in exploring data related to the impact of Immigration on the economic growth of a country. Today immigration is used a a political tool to create division and to distinguish the ideology of various political parties across the world. Despite the frequent criticism surrounding the impact of migrants on a countries crime and violence rate, there is statistical evidence to convey that immigration can have a positive impact on a countries economic growth. Moreover, there could also be data to support that there is no correlation between a rise in immigration and an increase in crime. 
+I hypothesize that immigration positively impacts a country’s economy by increasing labor market flexibility, fostering innovation, and addressing labor shortages. According to economic theory, immigration can boost economic output by expanding the labor force, raising productivity, and enhancing diversity, which fosters creativity and innovation. These contributions are often observed in sectors requiring both high- and low-skilled labor, creating a more dynamic economy. Behavioral economic theory supports this view, highlighting the entrepreneurial and adaptive nature of immigrants, who often contribute disproportionately to economic growth. Additionally, institutional theory suggests that countries with strong economic and political structures are better equipped to absorb immigrant labor, maximizing positive outcomes.
 
+## Data
+Variables and Observed Patterns
 
-
-##Research Question:
-Does immigration have a positive impact on a country’s economy?
-##Hypothesis: 
-Immigration positively impacts a country’s economy by increasing labor market flexibility, fostering innovation, and filling labor shortages. According to economic theory, immigration boosts economic output by increasing the size of the labor force, raising productivity, and fostering diversity that enhances creativity and innovation. The positive economic contributions of immigrants are often seen in sectors requiring both high and low-skilled labor, leading to a more dynamic economy.
-This hypothesis is supported by behavioral economic theory, which posits that immigrants tend to be entrepreneurial and adaptable, often contributing disproportionately to industries that drive economic growth. Additionally, institutional theories suggest that countries with strong economic and political structures can better absorb immigrant labor, making these nations more likely to see positive economic outcomes from immigration.
-##Explanatory Variables of Interest:
-The main explanatory variable is immigration rates, which could be measured as the annual number of immigrants per capita or as a percentage of the population. This variable needs to exhibit variation across different countries and time periods to assess its impact on the economy effectively. Data sources for this might include government immigration statistics or international databases such as the World Bank or the OECD.
-Secondary explanatory variables could include type of immigrants (i.e., high-skilled vs. low-skilled), measured through education levels or occupational categories, as well as integration policies that measure how well immigrants are integrated into the workforce.
-##Outcome Variable of Interest:
-The outcome variable is economic performance, typically measured through GDP growth, employment rates, or labor productivity. GDP per capita, in particular, provides a good indicator of the overall economic impact, capturing how the economy adjusts to an increasing population. Alternatively, the impact on wages and unemployment rates for native workers can also be included to measure broader economic effects.
-#3Observed Patterns Supporting the Hypothesis:
-A positive relationship between immigration rates and GDP growth would support the hypothesis. Specifically, if countries with higher immigration rates consistently exhibit higher GDP growth, employment rates, and productivity gains, it would suggest that immigration contributes positively to the economy.
-##Observed Patterns Disproving the Hypothesis:
-A negative or no correlation between immigration rates and economic growth, or evidence of increasing unemployment or wage stagnation among native-born workers, would disprove the hypothesis. If the data show that higher immigration correlates with negative economic outcomes like a decrease in GDP growth or increasing income inequality, this would challenge the view that immigration has a broadly positive economic impact.
+The independent variable in this analysis is immigration inflow by country per year, sourced from the Organisation for Economic Co-operation and Development (OECD). The data was collected from 2015-2020, I chose this timeline given the migrant crisis in 2015 which impacted European countries. To ensure meaningful comparisons, I selected seven countries—France, Canada, Italy, Japan, the United States, the United Kingdom, and Germany—based on their high levels of immigration and political debate surrounding the issue. Japan was included as an outlier due to its cultural and ideological similarities to Western countries but unique geographic location in Asia. It is also important to note that the data is in thousands. 
 
 ```{r}
-library(ggplot2)
 library(tidyverse)
-library(dplyr)
-library(readr)
 
-IMF <- read_csv("Data/Cleaned_IMF_Dataset.csv")
-Inflow <- read_csv("Data/Cleaned_Inflow_Dataset.csv")
+Inflow <- read_csv("data/Immigration1.csv")
 
 
+immigration_long <- Inflow |>
+  pivot_longer(
+    cols = -"Country",        
+    names_to = "Year",
+    values_to = "Immigration_Inflow"
+  ) |>
+  mutate(Year = as.numeric(Year))  
 
-selected_countries <- c("United States", "Canada", "France", "Germany", 
-                        "Italy", "Japan", "Russia", "United Kingdom")
-
-imf_filtered <- IMF |>
-  filter(Country %in% selected_countries) |>
-  mutate(Year = as.numeric(Year), GDP = as.numeric(GDP))
-
-print(colnames(Inflow))  
-
-inflow_filtered <- Inflow |>
-  filter(Country %in% selected_countries) |>
-  select(Country, starts_with("Year_")) |>
-  mutate(across(starts_with("Year_"), as.numeric)) |>
-  pivot_longer(cols = starts_with("Year_"), 
-               names_to = "Year", 
-               values_to = "Inflow") |>
-  mutate(Year = as.numeric(gsub("Year_", "", Year)))
-
-IMFplot <- ggplot(imf_filtered, aes(x = Year, y = GDP, color = Country)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  labs(title = "GDP Trends for Selected Countries", 
-       x = "Year", 
-       y = "GDP (in billions)", 
-       color = "Country") +
+ggplot(immigration_long, aes(x = Year, y = Immigration_Inflow, color = Country)) +
+  geom_line(linewidth = 1) +      
+  geom_point(linewidth = 2) +      
+  labs(
+    title = "Immigration Inflow by Country (2015-2020)", 
+    x = "Year",
+    y = "Immigration Inflow (Thousands)",
+    color = "Country"
+  ) +
   theme_minimal()
 
-Inflowplot <- ggplot(inflow_filtered, aes(x = Year, y = Inflow, color = Country)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  labs(title = "Immigration Inflow Trends for Selected Countries", 
-       x = "Year", 
-       y = "Immigration Inflow", 
-       color = "Country") +
+```
+
+The dependent variable is economic performance, measured through annual GDP growth (2015-2019) and unemployment rates. GDP growth provides a broad indicator of economic impact. Where Unemployment levels illustrate the economic health of a country and also will test the claim immigration causes an increase in unemployment among native workers. Due to the economic disruptions caused by COVID-19, data for 2020 was excluded to ensure validity. Unemployment rates test the claim that immigration displaces native workers.
+
+Dependent 1: Unemployment Rates
+Unemployment rates were collected from United Nations Economic Commission for Europe (UNECE) and again feature the selected 7 countries from years 2015-2020. Unemployment rates test the claim that immigration causes a decrease in unemployment reflecting a postive economic impact from immigration. They also test the claim that immigration displaces native workers. 
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+
+Unemp <- read_csv("data/Unemployment4.csv")
+
+
+unemployment_long <- Unemp |>
+  pivot_longer(
+    cols = -"Country",      
+    names_to = "Year",
+    values_to = "Unemployment_Rate"
+  ) |>
+  mutate(Year = as.numeric(Year))  
+
+# Create the graph
+ggplot(unemployment_long, aes(x = Year, y = Unemployment_Rate, color = Country)) +
+  geom_line(size = 1) +      
+  geom_point(size = 2) +      
+  labs(
+    title = "Unemployment Rate by Country (2015-2020)",  # Update title as needed
+    x = "Year",
+    y = "Unemployment Rate (%)",
+    color = "Country"
+  ) +
   theme_minimal()
 
-print(IMFplot)
-print(Inflowplot)
+```
 
+Dependent 2: Annual % GDP Growth per country per year
+GDP growth provides a broad indicator of economic impact and was collected from 2015 to 2020. However, as previously mentioned, data from 2020 was omitted due to the irregularities caused by the COVID-19 pandemic. The dataset, sourced from the World Bank, includes the seven selected countries.
+
+```{r}
+percgdp <- read_csv("data/gdpgrowth1.csv")
+
+gdp_growth_long <- percgdp |>
+  pivot_longer(
+    cols = -"Country",        
+    names_to = "Year",
+    values_to = "GDP_Growth"
+  ) |>
+  mutate(Year = as.numeric(Year)) |>
+  filter(Year != 2020)  
+
+ggplot(gdp_growth_long, aes(x = Year, y = GDP_Growth, color = Country)) +
+  geom_line(size = 1) +       
+  geom_point(size = 2) +     
+  labs(
+    title = "GDP Growth Percentage by Country (2015-2019)",  
+    x = "Year",
+    y = "GDP Growth (%)",
+    color = "Country"
+  ) +
+  theme_minimal()
 
 
 ```
-## Discussion
-The first graph highlights a pretty consistent GDP increase per year among the G 8 countries. While the second graph shows a a varied inflow of immigrants among the G 8 countries. Germany for example has had substanital GDP growth during the 2010s and also had a steady increase in inflow per year. Germany would serve as an example of the correlation between immigration inflow and economic growth. However, the graphs also counter my analayis, for example the US has had a consistent growth in GDP per year, but its inflow has has been dropping during that same time. 
 
+Observed Patterns:
+Patterns that would support the hypothesis include a positive correlation between immigration rates and GDP growth or lower unemployment rates. Conversely, patterns showing no correlation or negative outcomes, such as rising unemployment or declining GDP growth, would challenge the hypothesis and suggest immigration may not broadly benefit economic performance.
+
+Main Outcome of Interest:
+First, I created a graph showing the correlation between immigration inflow and unemployment. I created a scatter plot to depict the relationship which I hoped would provide support for my hypothesis, that immigration has a postive impact on decreasing unemployment rates. 
+
+```{r}
+library(tidyverse)
+
+
+
+combined_data <- unemployment_long |>
+  left_join(immigration_long, by = c("Country", "Year"))
+
+ggplot(combined_data, aes(x = Immigration_Inflow, y = Unemployment_Rate, color = Country)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed") +
+  labs(
+    title = "Relationship Between Immigration Inflow and Unemployment",
+    x = "Immigration Inflow (Thousands)",
+    y = "Unemployment Rate (%)",
+    color = "Country"
+  ) +
+  theme_minimal()
+
+
+```
+
+The scatter plot shows that countries with lower immigration inflows tended to have higher unemployment rates, while those with larger immigrant inflows generally experienced lower unemployment rates. For example, Germany had the highest immigration inflow from 2015 to 2020 and consistently maintained the lowest unemployment rate during the same period. In contrast, Italy, which ranked near the bottom in immigration inflow, exhibited one of the highest unemployment rates during this time.
+
+Second I focused on Annual % GDP Growth and its correlation to immigration inflow.
+
+```{r}
+library(tidyverse)
+
+
+combined_data <- gdp_growth_long |>
+  inner_join(immigration_long, by = c("Country", "Year"))
+
+ggplot(combined_data, aes(x = Immigration_Inflow, y = GDP_Growth, color = Country)) +
+  geom_point(size = 3, alpha = 0.7) +  
+  geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed") +  
+  labs(
+    title = "Relationship Between Immigration Inflow and GDP Growth",
+    x = "Immigration Inflow (Thousands)",
+    y = "GDP Growth (%)",
+    color = "Country"
+  ) +
+  theme_minimal()
+```
+
+This graph was less helpful in supporting my hypothesis, as it did not reveal a strong correlation between immigration inflow and annual GDP growth. This outcome was somewhat expected, given that GDP growth is influenced by numerous factors, many of which are unrelated to immigration.
+
+## Results Section 
+
+With the two graphs created, one focusing on Unemployment and one on Annual % GDP Growth, I then ran a corresponding linear regression for both dependent variables.
+
+```{r}
+library(tidyverse)
+
+combined_data <- unemployment_long |>
+  left_join(immigration_long, by = c("Country", "Year"))
+
+regression_model <- lm(Unemployment_Rate ~ Immigration_Inflow, data = combined_data)
+
+summary(regression_model)
+
+ggplot(combined_data, aes(x = Immigration_Inflow, y = Unemployment_Rate, color = Country)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed") +
+  labs(
+    title = "Linear Regression:Relationship Between Immigration Inflow and Unemployment",
+    x = "Immigration Inflow (Thousands)",
+    y = "Unemployment Rate (%)",
+    color = "Country"
+  ) +
+  theme_minimal()
+
+```
+The regression results indicate a statistically significant negative relationship between immigration inflow and unemployment rate (p < 0.001). The estimated coefficient for immigration inflow is -0.0036, meaning that for every additional thousand immigrants, the unemployment rate decreases by approximately 0.0036 percentage points, holding other factors constant. The intercept of 8.83 represents the baseline unemployment rate when immigration inflow is zero.
+
+These results provide strong evidence to suggest that immigration inflow is associated with a reduction in unemployment rates, supporting the hypothesis that immigration contributes positively to the labor market by reducing joblessness, contrary to claims that immigration displaces native workers. However, while the relationship is statistically significant, further investigation into other contributing factors and potential confounding variables is necessary to fully understand the dynamics of immigration's impact on unemployment.
+
+```{r}
+library(tidyverse)
+
+
+combined_data <- gdp_growth_long |>
+  inner_join(immigration_long, by = c("Country", "Year"))
+
+ggplot(combined_data, aes(x = Immigration_Inflow, y = GDP_Growth, color = Country)) +
+  geom_point(size = 3, alpha = 0.7) +  
+  geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed") +  
+  labs(
+    title = "Regression:Relationship Between Immigration Inflow and GDP Growth",
+    x = "Immigration Inflow (Thousands)",
+    y = "GDP Growth (%)",
+    color = "Country"
+  ) +
+  theme_minimal()
+```
+The regression results indicate that the relationship between immigration inflow and GDP growth is positive but not statistically significant. The coefficient for immigration inflow is 0.0003356, meaning that for every additional thousand immigrants, GDP growth is estimated to increase by 0.0003 percentage points, holding other factors constant. However, the p-value for this coefficient is 0.209, which is greater than the standard threshold for significance (0.05). This suggests that we cannot confidently conclude that immigration inflow has a meaningful impact on GDP growth based on this data.
+
+The intercept of 1.57 represents the estimated GDP growth when immigration inflow is zero, which provides a baseline for the model. While the relationship appears to trend positively, the lack of statistical significance indicates that other factors may be more influential in determining GDP growth, or that the data lacks sufficient variation or size to detect a clear effect.
+
+## Conclusion
+The results of this analysis offer mixed support for the hypothesis that immigration positively impacts a country’s economy. The regression between immigration inflow and unemployment rates revealed a statistically significant negative relationship, suggesting that higher immigration inflows are associated with lower unemployment rates. This supports the argument that immigration can enhance labor market flexibility and fill labor shortages without displacing native workers. However, the regression between immigration inflow and GDP growth did not yield statistically significant results. While there was a slight positive trend, it was not strong enough to conclude that immigration directly drives GDP growth, likely due to the influence of other economic factors.
+
+This analysis has several limitations. First, the dataset was limited to seven countries and a relatively short time frame (2015-2019), which may not capture broader trends or variations across different regions and periods. Additionally, omitting 2020 due to COVID-19 disruptions may have excluded data that could provide further insights. Missing data and confounding variables, such as immigration policies, global economic conditions, and domestic economic structures, likely influenced the results. If I had more time and resources, I would include a wider range of countries, a longer timeline, and control for other factors like education levels of immigrants and sector-specific labor needs to strengthen the analysis.
+
+Overall, while the findings partially support the hypothesis, they also highlight the complexity of immigration's economic impact. Further research is needed to unravel the nuanced relationships between immigration, GDP growth, and unemployment.
 
